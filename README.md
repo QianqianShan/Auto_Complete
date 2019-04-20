@@ -40,7 +40,7 @@ start hadoop-slave1 container...
 start hadoop-slave2 container...
 ```
 
-# Theory behind Auto-Complete 
+# Theory Behind Auto-Complete 
 
 * Most frequent user query-based suggestion generation
 
@@ -58,3 +58,4 @@ start hadoop-slave2 container...
 2. [http://hadoop.apache.org/](http://hadoop.apache.org/)
 3. [https://devhub.io/repos/joway-hadoop-cluster-docker](https://devhub.io/repos/joway-hadoop-cluster-docker)
 4. [Speech and Language Processing, Daniel Jurafsky \& James H. Martin (Chapter 3)](https://web.stanford.edu/~jurafsky/slp3/3.pdf)
+5. [MapReduce Tutorial on https://hadoop.apache.org](https://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html)

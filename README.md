@@ -49,7 +49,7 @@ N-gram model is a language model which predicts the next word from the previous 
 
 ## Notation 
 
-Denote a sequence of $n$ words as $$w_1^n=w_1,w_2,\cdots,w_n$$ and we have a computer-readable collection of text called *corpus*, $C$, that can be used to count frequencies of words or sequences. Denote the count of N-gram of words $w_1,\cdots,w_N$ as $C(w_1,\cdots,w_N)$. 
+Denote a sequence of $n$ words as $$ w_1^n=w_1,w_2,\cdots,w_n $$ and we have a computer-readable collection of text called *corpus*, $C$, that can be used to count frequencies of words or sequences. Denote the count of N-gram of words $w_1,\cdots,w_N$ as $C(w_1,\cdots,w_N)$. 
 
 ## Maximum Likelihood estimation (MLE)
 

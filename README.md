@@ -7,8 +7,11 @@
 1. [Preliminaries](#preliminaries)
 
 
-1. [Theory Behind Auto-Complete](#theory-behind-auto-complete)
+1. [N-Gram Model](#n-gram-model)
 
+1. [Discussion](#discussion)
+    * [Sensitivity of N-Gram Model to Training Corpus](#sensitivity-of-n-Gram-model-to-training-corpus)
+   
 1. [Hadoop Setup](#hadoop-setup)
 
 1. [References](#references)
@@ -40,10 +43,25 @@ start hadoop-slave1 container...
 start hadoop-slave2 container...
 ```
 
-# Theory Behind Auto-Complete 
+# N-Gram Model
 
-* Most frequent user query-based suggestion generation
+N-gram model is a language model which predicts the next word from the previous $(N-1)$ words, where N-grame is an N-token sequence of words such as ''I like apple''(trigram), ''New York''(bigram) and so on. The intuition of N-gram model is that we can *approximate* the probability of a word given the entire history by the probability given the last $(N-1)$ words. 
 
+## Notation 
+
+Denote a sequence of $n$ words as $$w_1^n=w_1,w_2,\cdots,w_n$$ and we have a computer-readable collection of text called *corpus*, $C$, that can be used to count frequencies of words or sequences. Denote the count of N-gram of words $w_1,\cdots,w_N$ as $C(w_1,\cdots,w_N)$. 
+
+## Maximum Likelihood estimation (MLE)
+
+We obtain the MLE estimate of the probabilities of N-gram model by normalizing the counts from corpus $C$, that is, the ratio of counts of sequence $w_{n-N+1}^{n-1}w_n$ over that of $w_{n-N+1}^{n-1}$,
+$$P(w_n|w_{n-N+1}^{n-1})=\frac{C(w_{n-N+1}^{n-1}w_n)}{C(w_{n-N+1}^{n-1})}$$ 
+
+
+# Discussion 
+
+## Sensitivity of N-Gram Model to Training Corpus
+
+## 
 
 ## Find IP on Linux Systems
 

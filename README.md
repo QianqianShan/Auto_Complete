@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 # Implementation of Auto-Complete with MapReduce 
 
 1. [Overview](#overview)
@@ -10,8 +15,7 @@
 1. [N-Gram Model](#n-gram-model)
 
 1. [Discussion](#discussion)
-    * [Sensitivity of N-Gram Model to Training Corpus](#sensitivity-of-n-Gram-model-to-training-corpus)
-   
+
 1. [Hadoop Setup](#hadoop-setup)
 
 1. [References](#references)
@@ -51,17 +55,35 @@ N-gram model is a language model which predicts the next word from the previous 
 
 Denote a sequence of $n$ words as $$ w_1^n=w_1,w_2,\cdots,w_n $$ and we have a computer-readable collection of text called *corpus*, $C$, that can be used to count frequencies of words or sequences. Denote the count of N-gram of words $w_1,\cdots,w_N$ as $C(w_1,\cdots,w_N)$. 
 
-## Maximum Likelihood estimation (MLE)
+## Maximum Likelihood estimation (MLE) of Probability of Next Word 
 
 We obtain the MLE estimate of the probabilities of N-gram model by normalizing the counts from corpus $C$, that is, the ratio of counts of sequence $w_{n-N+1}^{n-1}w_n$ over that of $w_{n-N+1}^{n-1}$,
 $$P(w_n|w_{n-N+1}^{n-1})=\frac{C(w_{n-N+1}^{n-1}w_n)}{C(w_{n-N+1}^{n-1})}$$ 
 
 
+## N-Gram Model Implementation
+
+There are three main steps to implement N-gram model: 
+
+* Calculate the total counts of each N-gram sequence  reads raw data hadoop distributed file systems (hdfs)
+
+* 
+
+* 
+
+
+### Optimization of N-Gram Model in MapReduce
+
+In the N-gram model, we predict the next word based on MLE of probabilities of words, this can be simplified by justing checking which word has the highest frequency to show up next given the previous $(N-1)$ words. For example, users input *I like*, and we have
+$$C(apple|I like)=500$$ and $$C(banana|I like) = 200$$
+as the denominator $C(I like)$ is the same for the above two cases, the frequencies reflect their corresponding probabilities. Then we may want to recommend the trigram sequence as *I like apple* as first.
+
 # Discussion 
 
-## Sensitivity of N-Gram Model to Training Corpus
+* N-gram model is sensitive to the corpus we are using. The probabilities are often an implication of specific facts of the used corpus. 
 
-## 
+* N-gram model may assign some N-grams zero probability due to the limited corpus we are using. One can use smoothing methods to assign these kinds of N-grams non-zero probability, for example, Laplace smoothing, Good-Turing discounting and so on. 
+
 
 ## Find IP on Linux Systems
 

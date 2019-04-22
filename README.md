@@ -1,8 +1,4 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
+
 # Implementation of Auto-Complete with MapReduce 
 
 1. [Overview](#overview)
@@ -65,11 +61,12 @@ $$P(w_n|w_{n-N+1}^{n-1})=\frac{C(w_{n-N+1}^{n-1}w_n)}{C(w_{n-N+1}^{n-1})}$$
 
 There are three main steps to implement N-gram model: 
 
-* Calculate the total counts of each N-gram sequence  reads raw data hadoop distributed file systems (hdfs)
+* Calculate the counts of each n-gram for $n=1,2,\cdots,N$ based on raw data stored on hadoop distributed file systems (hdfs)
 
-* 
+* Calculate the counts of each following word given the previous word sequence and save the top $k$ frequent following words for each possible combination of previous word sequence into MYSQL database. 
 
-* 
+* Visualize the auto-complete process with PHP, MySQL and jQuery as shown at [http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery](http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery
+).
 
 
 ### Optimization of N-Gram Model in MapReduce

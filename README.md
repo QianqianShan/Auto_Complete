@@ -63,10 +63,12 @@ There are three main steps to implement N-gram model:
 
 * Calculate the counts of each n-gram for $n=1,2,\cdots,N$ based on raw data stored on hadoop distributed file systems (hdfs)
 
-* Calculate the counts of each following word given the previous word sequence and save the top $k$ frequent following words for each possible combination of previous word sequence into MYSQL database. 
+* Calculate the counts of each following word given the previous word sequence and save the top $k$ frequent following words for each possible combination of previous word sequence into MySQL database. 
 
 * Visualize the auto-complete process with PHP, MySQL and jQuery as shown at [http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery](http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery
-).
+). LAMP (Linux, Apache HTTP server, MySQL, PHP) software bundle is used for the visulization ([Wiki](https://en.wikipedia.org/wiki/LAMP_(software_bundle))). 
+
+
 
 
 ### Optimization of N-Gram Model in MapReduce
@@ -82,11 +84,92 @@ as the denominator $C(I like)$ is the same for the above two cases, the frequenc
 * N-gram model may assign some N-grams zero probability due to the limited corpus we are using. One can use smoothing methods to assign these kinds of N-grams non-zero probability, for example, Laplace smoothing, Good-Turing discounting and so on. 
 
 
-## Find IP on Linux Systems
+# Run Auto-Complete in Hadoop 
+
+## Set up LAMP 
+
+* `sudo apt-get update`
+
+* `sudo apt-get -y install wget screen unzip`, install wget, screen and unzip if not installed. 
+
+* `screen -S lamp`, run the installation process in background to avoid unexpected interruption. 
+
+* `git clone https://github.com/teddysun/lamp.git`, download lamp. See more details at [https://github.com/teddysun/lamp](https://github.com/teddysun/lamp).
+
+* `cd lamp`
+
+* `chmod +x *.sh`, change script mode to executable. 
+
+* `./lamp.sh`, install lamp.
+
+
+Other installation options are shown at  [https://www.linode.com/docs/web-servers/lamp/install-lamp-stack-on-ubuntu-18-04/](https://www.linode.com/docs/web-servers/lamp/install-lamp-stack-on-ubuntu-18-04/).
+
+
+## Set up MySQL
+
+### Find IP on Linux Systems
 
 * Method 1: `hostname -I`
 
 * Method 2: `ifconfig | grep inet | grep broadcast`
+
+### Create a database 
+
+* `CTL + ALT + T` to open a new terminal 
+
+* `cd /usr/local/mysql/bin/` 
+
+*  `./mysql -uroot -p`
+
+
+* `create database test;`, create a database called `test`
+* `use test;`, switch to test database 
+* `create table output(starting_phrase VARCHAR(250), following_word VARCHAR(250), count INT);`, create a table called `output` with three columns: starting_phrase, following_word, count.
+
+* `GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION; FLUSH PRIVILEGES;`, grant MySQL remote login with the password replaced by the password of your MySQL server.
+
+* `SHOW VARIABLES WHERE Variable_name = 'port';` check the port number to be used later. 
+
+
+### Set up Hadoop in docker 
+
+* `./start-container.sh`, start docker
+
+* `./start-hadoop.sh`, start hadoop
+
+* `cd src`
+
+* Download `mysql-connector-java-5.1.39-bin.jar` from [https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.39](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.39) so we can write to local mysql after running MapReduce jobs. 
+
+* `hdfs dfs -mkdir /mysql`, create a folder `mysql` in hdfs within hadoop.
+
+* `hdfs dfs -put mysql-connector-java-*.jar /mysql/`, copy the previous downloaded `mysql-connnector*.jar` to `mysql` folder of hdfs. 
+
+* `hdfs dfs -mkdir /NGram`, create a folder `NGram` to store code and corpus. 
+
+* `cd NGram`
+* `hdfs dfs -mkdir -p input`
+* `hdfs dfs -rm -r /output`  （ 如果是第一次执行就不需要rm output
+* `hdfs dfs -put bookList/*  input/` 
+
+### Set up your IP, password and path to mysql connector in `Driver.java`:
+
+
+local_ip_address  : 192.168.1.5
+MySQL_port : 3306 
+your_password: root
+hdfs_path_to_mysql-connector: /root/src/mysql-connector-java-5.1.39-bin.jar
+
+
+### Run Auto-Complete
+
+
+* `hadoop com.sun.tools.javac.Main *.java`
+* `jar cf ngram.jar *.class`
+
+* `hadoop jar ngram.jar Driver input /output 2 3 4`, `2 3 4` are arguments passed to code, 2 is gram size, 3 is threshold size, 4 is following word size. 
+
 
 
 # References 
@@ -94,5 +177,6 @@ as the denominator $C(I like)$ is the same for the above two cases, the frequenc
 1. [https://www.docker.com](https://www.docker.com)
 2. [http://hadoop.apache.org/](http://hadoop.apache.org/)
 3. [https://devhub.io/repos/joway-hadoop-cluster-docker](https://devhub.io/repos/joway-hadoop-cluster-docker)
+4. [https://github.com/teddysun/lamp](https://github.com/teddysun/lamp)
 4. [Speech and Language Processing, Daniel Jurafsky \& James H. Martin (Chapter 3)](https://web.stanford.edu/~jurafsky/slp3/3.pdf)
 5. [MapReduce Tutorial on https://hadoop.apache.org](https://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html)

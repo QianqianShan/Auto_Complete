@@ -1,13 +1,19 @@
+import java.io.IOException;
+
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-import java.io.IOException;
 
 public class NGramLibraryBuilder {
 	public static class NGramMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
@@ -29,7 +35,7 @@ public class NGramLibraryBuilder {
 			*/
 			Configuration conf = context.getConfiguration();
 
-			noGram = conf.getInt("noGram", 5)
+			noGram = conf.getInt("noGram", 5);
 		}
 
 		/*
@@ -51,9 +57,9 @@ public class NGramLibraryBuilder {
 
 			Read sentence by sentence instead of line by line (realized by Configuration object) in setup
 			*/
-			
+
 			String line = value.toString();
-			
+
 			line = line.trim().toLowerCase();
 
 			/* Replace non-alphabetical characters such as , . ? with a blank space */
@@ -61,7 +67,7 @@ public class NGramLibraryBuilder {
 
 			/* Split words by one or more spaces */
 			String[] words = line.split("\\s+");
-            /* If there is only one word or no word in a sentence, cannot help constructing ngrams */
+			/* If there is only one word or no word in a sentence, cannot help constructing ngrams */
 			if (words.length < 2) {
 				return;
 			}
@@ -86,31 +92,31 @@ public class NGramLibraryBuilder {
 					sb.append(" ");
 					sb.append(words[i + j]);
 					/* write output pairs to disk */
-					context.write(new Text(sb.toString().trim(), new IntWritable(1)));
+					context.write(new Text(sb.toString().trim()), new IntWritable(1));
 				}
 			}
 		}
 	}
 
 	/* Count the appearances of each n-gram with n = 2, ..., N
-	* Example: "I like \t 200", key and value are separated by \t by default
-	* */
+	 * Example: "I like \t 200", key and value are separated by \t by default
+	 * */
 	public static class NGramReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
 		@Override
 		public void reduce(Text key, Iterable<IntWritable> values, Context context)
 				throws IOException, InterruptedException {
 			/*
-			* input key: ngram
-			* input value: <1, 1, 1, ...>
-			* output key: ngram
-			* output value: total count
-			* */
+			 * input key: ngram
+			 * input value: <1, 1, 1, ...>
+			 * output key: ngram
+			 * output value: total count
+			 * */
 
 			int count = 0;
 			for (IntWritable value: values) {
 				count += value.get();
 			}
-            /* write data */
+			/* write data */
 			context.write(key, new IntWritable(count));
 
 		}

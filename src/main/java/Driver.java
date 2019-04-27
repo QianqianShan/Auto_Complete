@@ -59,7 +59,7 @@ public class Driver {
 		
 		/* MapReduce job 2: LanguageModel */
 		Configuration conf2 = new Configuration();
-		conf2.set("threashold", threshold);
+		conf2.set("threshold", threshold);
 		conf2.set("n", numberOfFollowingWords);
 
 		/* Configure jdbcDrive, db user, db password, database

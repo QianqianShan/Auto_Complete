@@ -1,4 +1,3 @@
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -18,7 +17,7 @@ public class LanguageModel {
 		                        of data
 		*/
 
-		int threashold;
+		int threshold;
 
 		@Override
 		public void setup(Context context) {
@@ -28,11 +27,11 @@ public class LanguageModel {
 		}
 
 		/*
-		* Split each ngram with the first (n-1)-gram as start words, the last gram as following word
-		* Input: key value pairs of ngram, count from NGramLibraryBuilder
-		* Output key: start words
-		* Output value: following words + count
-		* */
+		 * Split each ngram with the first (n-1)-gram as start words, the last gram as following word
+		 * Input: key value pairs of ngram, count from NGramLibraryBuilder
+		 * Output key: start words
+		 * Output value: following words + count
+		 * */
 		@Override
 		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 			/*
@@ -95,16 +94,16 @@ public class LanguageModel {
 			n = conf.getInt("n", 5);
 		}
 
-        /*
-        * 1. Find top n frequent following words of each key (start words)
-        * 2. Write to database (start words, following words, count)
-        *
-        * Use TreeMap to save data in the form of (count as TreeMap key, list of following words which appears count times)
-        *
-        * Input key: start words, e.g., I like
-        * Input values: iterables with item like <programming=200, apple=300,...>
-        * Output: top n combinations of (input key (start words), following word, count )
-        * */
+		/*
+		 * 1. Find top n frequent following words of each key (start words)
+		 * 2. Write to database (start words, following words, count)
+		 *
+		 * Use TreeMap to save data in the form of (count as TreeMap key, list of following words which appears count times)
+		 *
+		 * Input key: start words, e.g., I like
+		 * Input values: iterables with item like <programming=200, apple=300,...>
+		 * Output: top n combinations of (input key (start words), following word, count )
+		 * */
 		@Override
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
@@ -115,8 +114,8 @@ public class LanguageModel {
 			for (Text value: values) {
 				String curValue = value.toString().trim();
 				/*split apple=200 to apple, 200 */
-				String word = curValue.split('=')[0].trim();
-				int count = curValue.split("=")[1].trim();
+				String word = curValue.split("=")[0].trim();
+				int count = Integer.parseInt(curValue.split("=")[1].trim());
 
 				/* add count as key add word into list */
 				if (tm.containsKey(count)) {
@@ -128,17 +127,17 @@ public class LanguageModel {
 				}
 			}
 
-            /* write the top n frequent following words in reverse order (most frequent comes first) */
+			/* write the top n frequent following words in reverse order (most frequent comes first) */
 			/* iter: counts of the TreeMap */
 			Iterator<Integer> iter = tm.keySet().iterator();
-			for (int i = 0; iter.hasNext() && i < n) {
+			for (int i = 0; iter.hasNext() && i < n;) {
 				int count = iter.next();
 				List<String> words = tm.get(count);
 				for (String word: words) {
 					/* write: start words, following word, count
-					* Writable class requires key, value pairs, we have written all info in key, so use
-					* NullWritable as placeholder for value
-					* */
+					 * Writable class requires key, value pairs, we have written all info in key, so use
+					 * NullWritable as placeholder for value
+					 * */
 					context.write(new DBOutputWritable(key.toString(), word, count), NullWritable.get());
 					i++;
 				}
@@ -146,3 +145,4 @@ public class LanguageModel {
 		}
 	}
 }
+

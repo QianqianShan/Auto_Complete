@@ -120,14 +120,14 @@ Other installation options are shown at  [https://www.linode.com/docs/web-server
 
 * `cd /usr/local/mysql/bin/` 
 
-*  `./mysql -uroot -p`
+*  `./mysql -uroot -p`, password required to enter MySQL monitor, use the password you set up when installing LAMP.
 
 
 * `create database test;`, create a database called `test`
 * `use test;`, switch to test database 
-* `create table output(starting_phrase VARCHAR(250), following_word VARCHAR(250), count INT);`, create a table called `output` with three columns: starting_phrase, following_word, count.
+* `create table output(starting_phrase VARCHAR(250), following_word VARCHAR(250), count INT);`, create a table called `output` with three columns: starting_phrase, following_word, count. Table can be deleted with `drop table output;`.
 
-* `GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION; FLUSH PRIVILEGES;`, grant MySQL remote login with the password replaced by the password of your MySQL server.
+* `GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION; FLUSH PRIVILEGES;`, grant MySQL remote login with the `password` replaced by the password of your MySQL server.
 
 * `SHOW VARIABLES WHERE Variable_name = 'port';` check the port number to be used later. 
 
@@ -140,17 +140,16 @@ Other installation options are shown at  [https://www.linode.com/docs/web-server
 
 * `cd src`
 
-* Download `mysql-connector-java-5.1.39-bin.jar` from [https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.39](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.39) so we can write to local mysql after running MapReduce jobs. 
+* `wget http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.39/mysql-connector-java-5.1.39.jar`, download `mysql-connector-java-5.1.39-bin.jar` from [https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.39](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.39) so we can write to local mysql after running MapReduce jobs. 
 
 * `hdfs dfs -mkdir /mysql`, create a folder `mysql` in hdfs within hadoop.
 
 * `hdfs dfs -put mysql-connector-java-*.jar /mysql/`, copy the previous downloaded `mysql-connnector*.jar` to `mysql` folder of hdfs. 
 
-* `hdfs dfs -mkdir /NGram`, create a folder `NGram` to store code and corpus. 
 
 * `cd NGram`
 * `hdfs dfs -mkdir -p input`
-* `hdfs dfs -rm -r /output`  （ 如果是第一次执行就不需要rm output
+* `hdfs dfs -rm -r /output`, if there exists an output folder 
 * `hdfs dfs -put bookList/*  input/` 
 
 ### Set up your IP, password and path to mysql connector in `Driver.java`:

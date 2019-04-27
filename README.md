@@ -170,6 +170,7 @@ hdfs_path_to_mysql-connector: /root/src/mysql-connector-java-5.1.39-bin.jar
 * `hadoop jar ngram.jar Driver input /output 2 3 4`, `2 3 4` are arguments passed to code, 2 is gram size, 3 is threshold size, 4 is following word size. 
 
 
+* Once the MapReduce job is done, use `select * from output limit 10;` to check if your local database has been written with data. 
 
 # References 
 

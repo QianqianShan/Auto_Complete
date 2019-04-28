@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 # Implementation of Auto-Complete with MapReduce 
 
@@ -12,7 +17,7 @@
 
 1. [Discussion](#discussion)
 
-1. [Hadoop Setup](#hadoop-setup)
+1. [Run Auto-Complete in Hadoop](#run-auto-complete-in-hadoop)
 
 1. [References](#references)
 
@@ -20,6 +25,13 @@
 # Overview 
 
 # Visualization 
+
+The following pictures show screenshots of the visulization of autocomplte. 
+
+![Autocomplete](images/pic1.png?raw=true "Title")
+![Autocomplete](images/pic2.png?raw=true "Title")
+
+
 
 # Preliminaries
 
@@ -43,6 +55,11 @@ start hadoop-slave1 container...
 start hadoop-slave2 container...
 ```
 
+* Visualize the auto-complete process with PHP, MySQL and jQuery as shown at [http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery](http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery
+). LAMP (Linux, Apache HTTP server, MySQL, PHP) software bundle is used for the visulization ([Wiki](https://en.wikipedia.org/wiki/LAMP_(software_bundle))). 
+
+
+
 # N-Gram Model
 
 N-gram model is a language model which predicts the next word from the previous $(N-1)$ words, where N-grame is an N-token sequence of words such as ''I like apple''(trigram), ''New York''(bigram) and so on. The intuition of N-gram model is that we can *approximate* the probability of a word given the entire history by the probability given the last $(N-1)$ words. 
@@ -65,8 +82,6 @@ There are three main steps to implement N-gram model:
 
 * Calculate the counts of each following word given the previous word sequence and save the top $k$ frequent following words for each possible combination of previous word sequence into MySQL database. 
 
-* Visualize the auto-complete process with PHP, MySQL and jQuery as shown at [http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery](http://www.bewebdeveloper.com/tutorial-about-autocomplete-using-php-mysql-and-jquery
-). LAMP (Linux, Apache HTTP server, MySQL, PHP) software bundle is used for the visulization ([Wiki](https://en.wikipedia.org/wiki/LAMP_(software_bundle))). 
 
 
 
@@ -74,7 +89,7 @@ There are three main steps to implement N-gram model:
 ### Optimization of N-Gram Model in MapReduce
 
 In the N-gram model, we predict the next word based on MLE of probabilities of words, this can be simplified by justing checking which word has the highest frequency to show up next given the previous $(N-1)$ words. For example, users input *I like*, and we have
-$$C(apple|I like)=500$$ and $$C(banana|I like) = 200$$
+$$C(apple|I \quad like)=500$$ and $$C(banana|I \quad like) = 200$$
 as the denominator $C(I like)$ is the same for the above two cases, the frequencies reflect their corresponding probabilities. Then we may want to recommend the trigram sequence as *I like apple* as first.
 
 # Discussion 
@@ -108,11 +123,7 @@ Other installation options are shown at  [https://www.linode.com/docs/web-server
 
 ## Set up MySQL
 
-### Find IP on Linux Systems
 
-* Method 1: `hostname -I`
-
-* Method 2: `ifconfig | grep inet | grep broadcast`
 
 ### Create a database 
 
@@ -146,22 +157,32 @@ Other installation options are shown at  [https://www.linode.com/docs/web-server
 
 * `hdfs dfs -put mysql-connector-java-*.jar /mysql/`, copy the previous downloaded `mysql-connnector*.jar` to `mysql` folder of hdfs. 
 
+* `wget --no-check-certificate https://github.com/QianqianShan/Auto_Complete/archive/v1.0.tar.gz`, download source code and corpus. 
 
-* `cd NGram`
+* `tar -xzvf v1.0.tar.gz`, unzip the file, there will be a folder `Auto_Complete-1.0`.
+* `cd Auto_Complete-1.0`.
 * `hdfs dfs -mkdir -p input`
-* `hdfs dfs -rm -r /output`, if there exists an output folder 
+* `hdfs dfs -rm -r /output`, if there exists an output folder. 
 * `hdfs dfs -put bookList/*  input/` 
 
 ### Set up your IP, password and path to mysql connector in `Driver.java`:
 
 
-local_ip_address  : 192.168.1.5
+1 - local_ip_address: can be found by 
 
-MySQL_port : 3306 
+* Method 1: `hostname -I`
 
-your_password: root
+* Method 2: `ifconfig | grep inet | grep broadcast`
 
-hdfs_path_to_mysql-connector: /root/src/mysql-connector-java-5.1.39.jar
+
+2 - MySQL_port: 
+
+* `SHOW VARIABLES WHERE Variable_name = 'port';` check the port number to be used later. 
+
+
+3 - your_password: the password you set when you set up your MySQL database.
+
+4 - hdfs_path_to_mysql-connector: for example, `/root/src/mysql-connector-java-5.1.39.jar`.
 
 
 ### Run Auto-Complete
@@ -174,6 +195,8 @@ hdfs_path_to_mysql-connector: /root/src/mysql-connector-java-5.1.39.jar
 
 
 * Once the MapReduce job is done, use `select * from output limit 10;` to check if your local database has been written with data. 
+
+
 
 # References 
 

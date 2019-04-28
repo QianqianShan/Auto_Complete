@@ -120,10 +120,10 @@ Other installation options are shown at  [https://www.linode.com/docs/web-server
 
 * `cd /usr/local/mysql/bin/` 
 
-*  `./mysql -uroot -p`, password required to enter MySQL monitor, use the password you set up when installing LAMP.
+*  `sudo ./mysql -uroot -p`, run as root password is also required to enter MySQL monitor, use the password you set up when installing LAMP.
 
 
-* `create database test;`, create a database called `test`
+* `create database test;`, create a database called `test`. Database can be dropped with `drop database test;`
 * `use test;`, switch to test database 
 * `create table output(starting_phrase VARCHAR(250), following_word VARCHAR(250), count INT);`, create a table called `output` with three columns: starting_phrase, following_word, count. Table can be deleted with `drop table output;`.
 
@@ -156,9 +156,12 @@ Other installation options are shown at  [https://www.linode.com/docs/web-server
 
 
 local_ip_address  : 192.168.1.5
+
 MySQL_port : 3306 
+
 your_password: root
-hdfs_path_to_mysql-connector: /root/src/mysql-connector-java-5.1.39-bin.jar
+
+hdfs_path_to_mysql-connector: /root/src/mysql-connector-java-5.1.39.jar
 
 
 ### Run Auto-Complete

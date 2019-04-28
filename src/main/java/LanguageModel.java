@@ -4,6 +4,8 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -74,11 +76,11 @@ public class LanguageModel {
 			}
 
 			String outputKey = sw.toString().trim();
-			String  outputValue = words[words.length - 1] + "=" + count;
+			String  outputValue = words[words.length - 1];
 
 			/* write */
-			if ( outputKey != null && outputKey.length() >= 1 ) {
-				context.write(new Text(outputKey), new Text(outputValue));
+			if ( !( (outputKey == null) || (outputKey.length() < 1) ) ) {
+				context.write(new Text(outputKey), new Text(outputValue + "=" + count));
 			}
 		}
 	}

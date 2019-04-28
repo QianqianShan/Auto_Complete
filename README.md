@@ -32,7 +32,24 @@ The following pictures show screenshots of the visulization of autocomplte.
 ![Autocomplete](images/pic2.png?raw=true "Title")
 
 
+Visualization can be done using the files in `autocomplete-visualization.tar`:
 
+* `cd /data/www/default` in your local machine. 
+* `wget --no-check-certificate https://github.com/QianqianShan/Auto_Complete/blob/master/autocomplete-visualization.tar`, download the visualization files. 
+
+* `tar -xvf autocomplete-visualization.tar`, unzip the file, and there will be a folder `autocomplete`. 
+
+* `cd autocomplete`, in the following script segment of `ajax_refresh.php`, replace `yourpassword` with your database password in `define ('DBPASS','yourpassword');`  and `return new PDO('mysql:host=localhost;dbname=yourdatabasename', 'root', 'yourpassword', ...`, also change the `dbname` to your database name, for example I set my database name as `test` so `dbname=test`.
+
+```
+define ('DBUSER', 'root');
+define ('DBPASS','yourpassword');
+define ('DBNAME','test');
+
+function connect() {
+    return new PDO('mysql:host=localhost;dbname=test', 'root', 'yourpassword', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+}
+```
 # Preliminaries
 
 * Operating system: The operating system is Ubuntu 18.04 LTS (Bionic Beaver).
